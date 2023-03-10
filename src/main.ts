@@ -1,3 +1,5 @@
+import Color, { writeColor } from "./Color";
+
 function main() {
   // Image
   const imageWidth = 256;
@@ -16,15 +18,12 @@ function main() {
       const g = j / (imageHeight - 1);
       const b = 0.25;
 
-      const ir = Math.floor(255.999 * r);
-      const ig = Math.floor(255.999 * g);
-      const ib = Math.floor(255.999 * b);
-
-      console.log(`${ir} ${ig} ${ib}`);
+      const pixelColor = new Color(r, g, b);
+      writeColor(pixelColor);
     }
   }
 
-  process.stderr.write('\nDone.\n');
+  process.stderr.write("\nDone.\n");
 }
 
 main();
