@@ -10,16 +10,24 @@ function hitSphere(center: Point3, radius: number, ray: Ray) {
   const b = 2 * oc.dot(ray.direction);
   const c = oc.dot(oc) - radius * radius;
   const discriminant = b * b - 4 * a * c;
-  return discriminant > 0;
+
+  if (discriminant < 0) {
+    return -1.0;
+  }
+  return (-b - Math.sqrt(discriminant)) / (2 * a);
 }
 
 function rayColor(ray: Ray) {
-  if (hitSphere(new Point3(0, 0, -1), 0.5, ray)) {
-    return new Color(1, 0, 0);
+  let t = hitSphere(new Point3(0, 0, -1), 0.5, ray);
+
+  // intersects with the ball
+  if (t > 0) {
+    const N = ray.at(t).subtract(new Vec3(0, 0, -1)).unit();
+    return new Color(N.x + 1, N.y + 1, N.z + 1).divide(2);
   }
 
   const unitDirection = ray.direction.unit(); // -1 < y < 1
-  const t = 0.5 * (unitDirection.y + 1.0);
+  t = 0.5 * (unitDirection.y + 1.0);
   return new Color(1, 1, 1).scale(1 - t).add(new Color(0.5, 0.7, 1.0).scale(t));
 }
 
