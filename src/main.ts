@@ -3,8 +3,22 @@ import Point3 from "./Point3";
 import Ray from "./Ray";
 import Vec3 from "./Vec3";
 
-function rayColor(r: Ray) {
-  const unitDirection = r.direction.unit(); // -1 < y < 1
+function hitSphere(center: Point3, radius: number, ray: Ray) {
+  const oc = ray.origin.subtract(center);
+
+  const a = ray.direction.dot(ray.direction);
+  const b = 2 * oc.dot(ray.direction);
+  const c = oc.dot(oc) - radius * radius;
+  const discriminant = b * b - 4 * a * c;
+  return discriminant > 0;
+}
+
+function rayColor(ray: Ray) {
+  if (hitSphere(new Point3(0, 0, -1), 0.5, ray)) {
+    return new Color(1, 0, 0);
+  }
+
+  const unitDirection = ray.direction.unit(); // -1 < y < 1
   const t = 0.5 * (unitDirection.y + 1.0);
   return new Color(1, 1, 1).scale(1 - t).add(new Color(0.5, 0.7, 1.0).scale(t));
 }
