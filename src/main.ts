@@ -6,15 +6,15 @@ import Vec3 from "./Vec3";
 function hitSphere(center: Point3, radius: number, ray: Ray) {
   const oc = ray.origin.subtract(center);
 
-  const a = ray.direction.dot(ray.direction);
-  const b = 2 * oc.dot(ray.direction);
-  const c = oc.dot(oc) - radius * radius;
-  const discriminant = b * b - 4 * a * c;
+  const a = ray.direction.lengthSquared();
+  const halfB = oc.dot(ray.direction);
+  const c = oc.lengthSquared() - radius * radius;
+  const discriminant = halfB * halfB - a * c;
 
   if (discriminant < 0) {
     return -1.0;
   }
-  return (-b - Math.sqrt(discriminant)) / (2 * a);
+  return (-halfB - Math.sqrt(discriminant)) / a;
 }
 
 function rayColor(ray: Ray) {
