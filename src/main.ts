@@ -6,7 +6,7 @@ import Point3 from "./Point3";
 import Ray from "./Ray";
 import Sphere from "./Sphere";
 import { random } from "./utils";
-import { randomUnitVector } from "./Vec3";
+import { randomInHemisphere } from "./Vec3";
 
 function rayColor(ray: Ray, world: Hittable, depth: number): Color {
   if (depth <= 0) {
@@ -16,9 +16,7 @@ function rayColor(ray: Ray, world: Hittable, depth: number): Color {
   // Here 0.001 is for fixing shadow acne
   const hitRecord = world.hit(ray, 0.001, Infinity);
   if (hitRecord) {
-    const target = hitRecord.point
-      .add(hitRecord.normal)
-      .add(randomUnitVector());
+    const target = hitRecord.point.add(randomInHemisphere(hitRecord.normal));
     return rayColor(
       new Ray(hitRecord.point, target.subtract(hitRecord.point)),
       world,

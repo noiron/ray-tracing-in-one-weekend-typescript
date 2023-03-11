@@ -75,3 +75,13 @@ export function randomInUnitSphere() {
 export function randomUnitVector() {
   return randomInUnitSphere().unit();
 }
+
+export function randomInHemisphere(normal: Vec3) {
+  const inUnitSphere = randomInUnitSphere();
+  if (inUnitSphere.dot(normal) > 0.0) {
+    // In the same hemisphere as the normal
+    return inUnitSphere;
+  } else {
+    return inUnitSphere.negate();
+  }
+}
