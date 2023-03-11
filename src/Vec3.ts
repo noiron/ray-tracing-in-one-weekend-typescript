@@ -106,3 +106,11 @@ export function refract(unitVector: Vec3, n: Vec3, etaiOverEtat: number): Vec3 {
 
   return rOutPerp.add(rOutParallel);
 }
+
+export function randomInUnitDisk() {
+  while (true) {
+    const p = new Vec3(random(-1, 1), random(-1, 1), 0);
+    if (p.lengthSquared() >= 1) continue;
+    return p;
+  }
+}

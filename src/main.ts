@@ -57,12 +57,20 @@ function main() {
   world.add(new Sphere(new Point3(1.0, 0.0, -1.0), 0.5, materialRight));
 
   // Camera
+  const lookfrom = new Point3(3, 3, 2);
+  const lookat = new Point3(0, 0, -1);
+  const vup = new Vec3(0, 1, 0);
+  const distToFocus = lookfrom.subtract(lookat).length();
+  const aperture = 2.0;
+
   const camera = new Camera(
-    new Point3(-2, 2, 1),
-    new Point3(0, 0, -1),
-    new Vec3(0, 1, 0),
+    lookfrom,
+    lookat,
+    vup,
     20,
-    aspectRatio
+    aspectRatio,
+    aperture,
+    distToFocus
   );
 
   // Render

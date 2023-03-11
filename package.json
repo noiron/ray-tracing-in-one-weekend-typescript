@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/main.ts > images/19.ppm"
+    "start": "ts-node src/main.ts > images/20.ppm"
   },
   "repository": {
     "type": "git",
