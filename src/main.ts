@@ -43,17 +43,27 @@ function main() {
   const maxDepth = 50;
 
   // World
-  const R = Math.cos(Math.PI / 4);
   const world = new HittableList();
 
-  const materialLeft = new Lambertian(new Color(0, 0, 1));
-  const materialRight = new Lambertian(new Color(1, 0, 0));
+  const materialGround = new Lambertian(new Color(0.8, 0.8, 0.0));
+  const materialCenter = new Lambertian(new Color(0.1, 0.2, 0.5));
+  const materialLeft = new Dielectric(1.5);
+  const materialRight = new Metal(new Color(0.8, 0.6, 0.2), 0.0);
 
-  world.add(new Sphere(new Point3(-R, 0.0, -1.0), R, materialLeft));
-  world.add(new Sphere(new Point3(R, 0.0, -1.0), R, materialRight));
+  world.add(new Sphere(new Point3(0.0, -100.5, -1.0), 100.0, materialGround));
+  world.add(new Sphere(new Point3(0.0, 0.0, -1.0), 0.5, materialCenter));
+  world.add(new Sphere(new Point3(-1.0, 0.0, -1.0), 0.5, materialLeft));
+  world.add(new Sphere(new Point3(-1.0, 0.0, -1.0), -0.45, materialLeft));
+  world.add(new Sphere(new Point3(1.0, 0.0, -1.0), 0.5, materialRight));
 
   // Camera
-  const camera = new Camera(90.0, aspectRatio);
+  const camera = new Camera(
+    new Point3(-2, 2, 1),
+    new Point3(0, 0, -1),
+    new Vec3(0, 1, 0),
+    90,
+    aspectRatio
+  );
 
   // Render
   console.log(`P3\n${imageWidth} ${imageHeight}\n255`);

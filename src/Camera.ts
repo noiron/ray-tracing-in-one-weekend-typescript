@@ -9,29 +9,37 @@ class Camera {
   horizontal: Vec3;
   vertical: Vec3;
 
-  constructor(vfov: number, aspectRatio: number) {
+  constructor(
+    lookfrom: Point3,
+    lookat: Point3,
+    vup: Vec3,
+    vfov: number,
+    aspectRatio: number
+  ) {
     const theta = degreesToRadians(vfov);
     const h = Math.tan(theta / 2);
     const viewportHeight = 2.0 * h;
     const viewportWidth = aspectRatio * viewportHeight;
 
-    const focalLength = 1;
+    const w = lookfrom.subtract(lookat).unit();
+    const u = vup.cross(w).unit();
+    const v = w.cross(u);
 
-    this.origin = new Point3(0, 0, 0);
-    this.horizontal = new Vec3(viewportWidth, 0, 0);
-    this.vertical = new Vec3(0, viewportHeight, 0);
+    this.origin = lookfrom;
+    this.horizontal = u.scale(viewportWidth);
+    this.vertical = v.scale(viewportHeight);
     this.lowerLeftCorner = this.origin
       .subtract(this.horizontal.divide(2))
       .subtract(this.vertical.divide(2))
-      .subtract(new Vec3(0, 0, focalLength));
+      .subtract(w);
   }
 
-  getRay(u: number, v: number): Ray {
+  getRay(s: number, t: number): Ray {
     return new Ray(
       this.origin,
       this.lowerLeftCorner
-        .add(this.horizontal.scale(u))
-        .add(this.vertical.scale(v))
+        .add(this.horizontal.scale(s))
+        .add(this.vertical.scale(t))
         .subtract(this.origin)
     );
   }
