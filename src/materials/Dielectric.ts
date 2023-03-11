@@ -2,6 +2,7 @@ import Color from "../Color";
 import { HitRecord } from "../Hittable";
 import { Material, Scattered } from "../Material";
 import Ray from "../Ray";
+import { random } from "../utils";
 import Vec3, { reflect, refract } from "../Vec3";
 
 export default class Dielectric implements Material {
@@ -25,7 +26,10 @@ export default class Dielectric implements Material {
 
     const cannotRefract = refractionRatio * sinTheta > 1.0;
     let direction: Vec3;
-    if (cannotRefract) {
+    if (
+      cannotRefract ||
+      Dielectric.reflectance(cosTheta, refractionRatio) > random()
+    ) {
       direction = reflect(unitDirection, hitRecord.normal);
     } else {
       direction = refract(unitDirection, hitRecord.normal, refractionRatio);
@@ -37,5 +41,12 @@ export default class Dielectric implements Material {
       attenuation: new Color(1, 1, 1),
       ray: scattered,
     };
+  }
+
+  static reflectance(cosine: number, refIdx: number) {
+    // Use Schlick's approximation for reflectance.
+    let r0 = (1 - refIdx) / (1 + refIdx);
+    r0 = r0 * r0;
+    return r0 + (1 - r0) * (1 - cosine) ** 5;
   }
 }
