@@ -91,6 +91,7 @@ export function randomInHemisphere(normal: Vec3) {
   }
 }
 
+/** 反射 */
 export function reflect(v: Vec3, n: Vec3) {
   return v.subtract(n.scale(v.dot(n) * 2));
 }
