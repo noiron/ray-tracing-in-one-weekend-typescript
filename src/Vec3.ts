@@ -71,3 +71,7 @@ export function randomInUnitSphere() {
     return p;
   }
 }
+
+export function randomUnitVector() {
+  return randomInUnitSphere().unit();
+}

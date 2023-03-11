@@ -6,7 +6,7 @@ import Point3 from "./Point3";
 import Ray from "./Ray";
 import Sphere from "./Sphere";
 import { random } from "./utils";
-import { randomInUnitSphere } from "./Vec3";
+import { randomUnitVector } from "./Vec3";
 
 function rayColor(ray: Ray, world: Hittable, depth: number): Color {
   if (depth <= 0) {
@@ -18,7 +18,7 @@ function rayColor(ray: Ray, world: Hittable, depth: number): Color {
   if (hitRecord) {
     const target = hitRecord.point
       .add(hitRecord.normal)
-      .add(randomInUnitSphere());
+      .add(randomUnitVector());
     return rayColor(
       new Ray(hitRecord.point, target.subtract(hitRecord.point)),
       world,
