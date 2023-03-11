@@ -1,6 +1,7 @@
 import Ray from "./Ray";
 import Vec3 from "./Vec3";
 import Point3 from "./Point3";
+import { degreesToRadians } from "./utils";
 
 class Camera {
   origin: Point3;
@@ -8,11 +9,12 @@ class Camera {
   horizontal: Vec3;
   vertical: Vec3;
 
-  constructor() {
-    // Image
-    const aspectRatio = 16 / 9;
-    const viewportHeight = 2;
+  constructor(vfov: number, aspectRatio: number) {
+    const theta = degreesToRadians(vfov);
+    const h = Math.tan(theta / 2);
+    const viewportHeight = 2.0 * h;
     const viewportWidth = aspectRatio * viewportHeight;
+
     const focalLength = 1;
 
     this.origin = new Point3(0, 0, 0);

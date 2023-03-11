@@ -5,6 +5,7 @@ import HittableList from "./HittableList";
 import Dielectric from "./materials/Dielectric";
 import Lambertian from "./materials/Lambertian";
 import Metal from "./materials/Metal";
+import Point3 from "./Point3";
 import Ray from "./Ray";
 import Sphere from "./Sphere";
 import { random } from "./utils";
@@ -41,20 +42,18 @@ function main() {
   const samplesPerPixel = 100;
   const maxDepth = 50;
 
+  // World
+  const R = Math.cos(Math.PI / 4);
   const world = new HittableList();
-  const materialGround = new Lambertian(new Color(0.8, 0.8, 0.0));
-  const materialCenter = new Lambertian(new Color(0.1, 0.2, 0.5));
-  const materialLeft = new Dielectric(1.5);
-  const materialRight = new Metal(new Color(0.8, 0.6, 0.2), 0.0);
 
-  world.add(new Sphere(new Vec3(0.0, -100.5, -1.0), 100.0, materialGround));
-  world.add(new Sphere(new Vec3(0.0, 0.0, -1.0), 0.5, materialCenter));
-  world.add(new Sphere(new Vec3(-1.0, 0.0, -1.0), 0.5, materialLeft));
-  world.add(new Sphere(new Vec3(-1.0, 0.0, -1.0), -0.4, materialLeft));
-  world.add(new Sphere(new Vec3(1.0, 0.0, -1.0), 0.5, materialRight));
+  const materialLeft = new Lambertian(new Color(0, 0, 1));
+  const materialRight = new Lambertian(new Color(1, 0, 0));
+
+  world.add(new Sphere(new Point3(-R, 0.0, -1.0), R, materialLeft));
+  world.add(new Sphere(new Point3(R, 0.0, -1.0), R, materialRight));
 
   // Camera
-  const camera = new Camera();
+  const camera = new Camera(90.0, aspectRatio);
 
   // Render
   console.log(`P3\n${imageWidth} ${imageHeight}\n255`);
