@@ -59,6 +59,11 @@ export default class Vec3 {
     return this.divide(this.length());
   };
 
+  nearZero = () => {
+    const s = 1e-8;
+    return Math.abs(this.x) < s && Math.abs(this.y) < s && Math.abs(this.z) < s;
+  };
+
   static random = (min = 0, max = 1) => {
     return new Vec3(random(min, max), random(min, max), random(min, max));
   };
@@ -84,4 +89,8 @@ export function randomInHemisphere(normal: Vec3) {
   } else {
     return inUnitSphere.negate();
   }
+}
+
+export function reflect(v: Vec3, n: Vec3) {
+  return v.subtract(n.scale(v.dot(n) * 2));
 }

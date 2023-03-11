@@ -2,11 +2,12 @@ import Camera from "./Camera";
 import Color, { writeColor } from "./Color";
 import Hittable from "./Hittable";
 import HittableList from "./HittableList";
-import Point3 from "./Point3";
+import Lambertian from "./materials/Lambertian";
+import Metal from "./materials/Metal";
 import Ray from "./Ray";
 import Sphere from "./Sphere";
 import { random } from "./utils";
-import { randomInHemisphere } from "./Vec3";
+import Vec3 from "./Vec3";
 
 function rayColor(ray: Ray, world: Hittable, depth: number): Color {
   if (depth <= 0) {
@@ -16,12 +17,14 @@ function rayColor(ray: Ray, world: Hittable, depth: number): Color {
   // Here 0.001 is for fixing shadow acne
   const hitRecord = world.hit(ray, 0.001, Infinity);
   if (hitRecord) {
-    const target = hitRecord.point.add(randomInHemisphere(hitRecord.normal));
-    return rayColor(
-      new Ray(hitRecord.point, target.subtract(hitRecord.point)),
-      world,
-      depth - 1
-    ).scale(0.5);
+    const scattered = hitRecord.material.scatter(hitRecord, ray);
+
+    if (scattered) {
+      return rayColor(scattered.ray, world, depth - 1).multiply(
+        scattered.attenuation
+      );
+    }
+    return new Color(0, 0, 0);
   }
 
   const unitDirection = ray.direction.unit(); // -1 < y < 1
@@ -38,8 +41,15 @@ function main() {
   const maxDepth = 50;
 
   const world = new HittableList();
-  world.add(new Sphere(new Point3(0, 0, -1), 0.5));
-  world.add(new Sphere(new Point3(0, -100.5, -1), 100));
+  const materialGround = new Lambertian(new Color(0.8, 0.8, 0.0));
+  const materialCenter = new Lambertian(new Color(0.7, 0.3, 0.3));
+  const materialLeft = new Metal(new Color(0.8, 0.8, 0.8));
+  const materialRight = new Metal(new Color(0.8, 0.6, 0.2));
+
+  world.add(new Sphere(new Vec3(0.0, -100.5, -1.0), 100.0, materialGround));
+  world.add(new Sphere(new Vec3(0.0, 0.0, -1.0), 0.5, materialCenter));
+  world.add(new Sphere(new Vec3(-1.0, 0.0, -1.0), 0.5, materialLeft));
+  world.add(new Sphere(new Vec3(1.0, 0.0, -1.0), 0.5, materialRight));
 
   // Camera
   const camera = new Camera();
