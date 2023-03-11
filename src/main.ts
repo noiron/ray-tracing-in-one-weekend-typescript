@@ -2,6 +2,7 @@ import Camera from "./Camera";
 import Color, { writeColor } from "./Color";
 import Hittable from "./Hittable";
 import HittableList from "./HittableList";
+import Dielectric from "./materials/Dielectric";
 import Lambertian from "./materials/Lambertian";
 import Metal from "./materials/Metal";
 import Ray from "./Ray";
@@ -42,8 +43,8 @@ function main() {
 
   const world = new HittableList();
   const materialGround = new Lambertian(new Color(0.8, 0.8, 0.0));
-  const materialCenter = new Lambertian(new Color(0.7, 0.3, 0.3));
-  const materialLeft = new Metal(new Color(0.8, 0.8, 0.8), 0.3);
+  const materialCenter = new Dielectric(1.5);
+  const materialLeft = new Dielectric(1.5);
   const materialRight = new Metal(new Color(0.8, 0.6, 0.2), 1.0);
 
   world.add(new Sphere(new Vec3(0.0, -100.5, -1.0), 100.0, materialGround));

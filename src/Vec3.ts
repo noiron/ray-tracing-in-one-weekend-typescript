@@ -94,3 +94,14 @@ export function randomInHemisphere(normal: Vec3) {
 export function reflect(v: Vec3, n: Vec3) {
   return v.subtract(n.scale(v.dot(n) * 2));
 }
+
+/** 折射 */
+export function refract(unitVector: Vec3, n: Vec3, etaiOverEtat: number): Vec3 {
+  const cosTheta = Math.min(unitVector.negate().dot(n), 1.0);
+  const rOutPerp = unitVector.add(n.scale(cosTheta)).scale(etaiOverEtat);
+  const rOutParallel = n.scale(
+    -Math.sqrt(Math.abs(1.0 - rOutPerp.lengthSquared()))
+  );
+
+  return rOutPerp.add(rOutParallel);
+}
