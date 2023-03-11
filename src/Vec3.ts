@@ -1,3 +1,5 @@
+import { random } from "./utils";
+
 export default class Vec3 {
   x: number;
   y: number;
@@ -56,4 +58,16 @@ export default class Vec3 {
   unit = () => {
     return this.divide(this.length());
   };
+
+  static random = (min = 0, max = 1) => {
+    return new Vec3(random(min, max), random(min, max), random(min, max));
+  };
+}
+
+export function randomInUnitSphere() {
+  while (true) {
+    const p = Vec3.random(-1, 1);
+    if (p.lengthSquared() >= 1) continue;
+    return p;
+  }
 }

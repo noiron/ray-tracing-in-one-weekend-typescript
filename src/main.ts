@@ -6,11 +6,24 @@ import Point3 from "./Point3";
 import Ray from "./Ray";
 import Sphere from "./Sphere";
 import { random } from "./utils";
+import { randomInUnitSphere } from "./Vec3";
 
-function rayColor(ray: Ray, world: Hittable) {
-  const hitRecord = world.hit(ray, 0, Infinity);
+function rayColor(ray: Ray, world: Hittable, depth: number): Color {
+  if (depth <= 0) {
+    return new Color(0, 0, 0);
+  }
+
+  // Here 0.001 is for fixing shadow acne
+  const hitRecord = world.hit(ray, 0.001, Infinity);
   if (hitRecord) {
-    return hitRecord.normal.add(new Color(1, 1, 1)).scale(0.5);
+    const target = hitRecord.point
+      .add(hitRecord.normal)
+      .add(randomInUnitSphere());
+    return rayColor(
+      new Ray(hitRecord.point, target.subtract(hitRecord.point)),
+      world,
+      depth - 1
+    ).scale(0.5);
   }
 
   const unitDirection = ray.direction.unit(); // -1 < y < 1
@@ -24,6 +37,7 @@ function main() {
   const imageWidth = 400;
   const imageHeight = Math.floor(imageWidth / aspectRatio);
   const samplesPerPixel = 100;
+  const maxDepth = 50;
 
   const world = new HittableList();
   world.add(new Sphere(new Point3(0, 0, -1), 0.5));
@@ -46,7 +60,7 @@ function main() {
         const u = (i + random()) / (imageWidth - 1);
         const v = (j + random()) / (imageHeight - 1);
         const r = camera.getRay(u, v);
-        pixelColor = pixelColor.add(rayColor(r, world));
+        pixelColor = pixelColor.add(rayColor(r, world, maxDepth));
       }
 
       writeColor(pixelColor, samplesPerPixel);
