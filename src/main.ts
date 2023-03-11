@@ -61,7 +61,7 @@ function main() {
     new Point3(-2, 2, 1),
     new Point3(0, 0, -1),
     new Vec3(0, 1, 0),
-    90,
+    20,
     aspectRatio
   );
 
