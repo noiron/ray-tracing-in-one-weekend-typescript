@@ -2,6 +2,7 @@ import Camera from "./Camera";
 import Color, { writeColor } from "./Color";
 import Hittable from "./Hittable";
 import HittableList from "./HittableList";
+import { Material } from "./Material";
 import Dielectric from "./materials/Dielectric";
 import Lambertian from "./materials/Lambertian";
 import Metal from "./materials/Metal";
@@ -34,34 +35,68 @@ function rayColor(ray: Ray, world: Hittable, depth: number): Color {
   return new Color(1, 1, 1).scale(1 - t).add(new Color(0.5, 0.7, 1.0).scale(t));
 }
 
+function randomScene(): HittableList {
+  const world = new HittableList();
+
+  const groundMaterial = new Lambertian(new Color(0.5, 0.5, 0.5));
+  world.add(new Sphere(new Point3(0, -1000, 0), 1000, groundMaterial));
+
+  for (let a = -11; a < 11; a++) {
+    for (let b = -11; b < 11; b++) {
+      const chooseMat = random();
+      const center = new Point3(a + 0.9 * random(), 0.2, b + random());
+
+      if (center.subtract(new Point3(4, 0.2, 0)).length() > 0.9) {
+        let sphereMaterial: Material;
+
+        if (chooseMat < 0.8) {
+          // diffuse
+          const albedo = Color.random().multiply(Color.random());
+          sphereMaterial = new Lambertian(albedo);
+          world.add(new Sphere(center, 0.2, sphereMaterial));
+        } else if (chooseMat < 0.95) {
+          // metal
+          const albedo = Color.random(0.5, 1);
+          const fuzz = random(0, 0.5);
+          sphereMaterial = new Metal(albedo, fuzz);
+          world.add(new Sphere(center, 0.2, sphereMaterial));
+        } else {
+          sphereMaterial = new Dielectric(1.5);
+          world.add(new Sphere(center, 0.2, sphereMaterial));
+        }
+      }
+    }
+  }
+
+  const material1 = new Dielectric(1.5);
+  world.add(new Sphere(new Point3(0, 1, 0), 1.0, material1));
+
+  const material2 = new Lambertian(new Color(0.4, 0.2, 0.1));
+  world.add(new Sphere(new Point3(-4, 1, 0), 1.0, material2));
+
+  const material3 = new Metal(new Color(0.7, 0.6, 0.5), 0.0);
+  world.add(new Sphere(new Point3(4, 1, 0), 1.0, material3));
+
+  return world;
+}
+
 function main() {
   // Image
-  const aspectRatio = 16 / 9;
-  const imageWidth = 400;
-  const imageHeight = Math.floor(imageWidth / aspectRatio);
-  const samplesPerPixel = 100;
+  const aspectRatio = 3.0 / 2.0;
+  const imageWidth = 1200;
+  const imageHeight = imageWidth / aspectRatio;
+  const samplesPerPixel = 50; // or 500
   const maxDepth = 50;
 
   // World
-  const world = new HittableList();
-
-  const materialGround = new Lambertian(new Color(0.8, 0.8, 0.0));
-  const materialCenter = new Lambertian(new Color(0.1, 0.2, 0.5));
-  const materialLeft = new Dielectric(1.5);
-  const materialRight = new Metal(new Color(0.8, 0.6, 0.2), 0.0);
-
-  world.add(new Sphere(new Point3(0.0, -100.5, -1.0), 100.0, materialGround));
-  world.add(new Sphere(new Point3(0.0, 0.0, -1.0), 0.5, materialCenter));
-  world.add(new Sphere(new Point3(-1.0, 0.0, -1.0), 0.5, materialLeft));
-  world.add(new Sphere(new Point3(-1.0, 0.0, -1.0), -0.45, materialLeft));
-  world.add(new Sphere(new Point3(1.0, 0.0, -1.0), 0.5, materialRight));
+  const world = randomScene();
 
   // Camera
-  const lookfrom = new Point3(3, 3, 2);
-  const lookat = new Point3(0, 0, -1);
+  const lookfrom = new Point3(13, 2, 3);
+  const lookat = new Point3(0, 0, 0);
   const vup = new Vec3(0, 1, 0);
-  const distToFocus = lookfrom.subtract(lookat).length();
-  const aperture = 2.0;
+  const distToFocus = 10.0;
+  const aperture = 0.1;
 
   const camera = new Camera(
     lookfrom,
