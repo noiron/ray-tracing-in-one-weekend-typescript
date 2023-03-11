@@ -1,33 +1,19 @@
 import Color, { writeColor } from "./Color";
+import Hittable from "./Hittable";
+import HittableList from "./HittableList";
 import Point3 from "./Point3";
 import Ray from "./Ray";
+import Sphere from "./Sphere";
 import Vec3 from "./Vec3";
 
-function hitSphere(center: Point3, radius: number, ray: Ray) {
-  const oc = ray.origin.subtract(center);
-
-  const a = ray.direction.lengthSquared();
-  const halfB = oc.dot(ray.direction);
-  const c = oc.lengthSquared() - radius * radius;
-  const discriminant = halfB * halfB - a * c;
-
-  if (discriminant < 0) {
-    return -1.0;
-  }
-  return (-halfB - Math.sqrt(discriminant)) / a;
-}
-
-function rayColor(ray: Ray) {
-  let t = hitSphere(new Point3(0, 0, -1), 0.5, ray);
-
-  // intersects with the ball
-  if (t > 0) {
-    const N = ray.at(t).subtract(new Vec3(0, 0, -1)).unit();
-    return new Color(N.x + 1, N.y + 1, N.z + 1).divide(2);
+function rayColor(ray: Ray, world: Hittable) {
+  const hitRecord = world.hit(ray, 0, Infinity);
+  if (hitRecord) {
+    return hitRecord.normal.add(new Color(1, 1, 1)).scale(0.5);
   }
 
   const unitDirection = ray.direction.unit(); // -1 < y < 1
-  t = 0.5 * (unitDirection.y + 1.0);
+  const t = 0.5 * (unitDirection.y + 1.0);
   return new Color(1, 1, 1).scale(1 - t).add(new Color(0.5, 0.7, 1.0).scale(t));
 }
 
@@ -36,6 +22,10 @@ function main() {
   const aspectRatio = 16 / 9;
   const imageWidth = 400;
   const imageHeight = Math.floor(imageWidth / aspectRatio);
+
+  const world = new HittableList();
+  world.add(new Sphere(new Point3(0, 0, -1), 0.5));
+  world.add(new Sphere(new Point3(0, -100.5, -1), 100));
 
   // Camera
   const viewportHeight = 2;
@@ -69,7 +59,7 @@ function main() {
           .add(vertical.scale(v))
           .subtract(origin)
       );
-      const pixelColor = rayColor(ray);
+      const pixelColor = rayColor(ray, world);
 
       writeColor(pixelColor);
     }
