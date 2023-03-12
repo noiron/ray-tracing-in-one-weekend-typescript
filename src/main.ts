@@ -85,7 +85,7 @@ function main() {
   const aspectRatio = 3.0 / 2.0;
   const imageWidth = 1200;
   const imageHeight = imageWidth / aspectRatio;
-  const samplesPerPixel = 50; // or 500
+  const samplesPerPixel = 500; // or 500
   const maxDepth = 50;
 
   // World
