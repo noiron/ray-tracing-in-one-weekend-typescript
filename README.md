@@ -6,3 +6,9 @@ This is the code repository for the [Ray Tracing in One Weekend
 ## How to Run
 
 Run `npm start` to generate corresponding image in the `images` folder.
+
+Each tag in this project corresponds to a specific image in the original tutorial. Using `git checkout <tag_name>` to switch to different stages.
+
+```
+git checkout image-1
+```
